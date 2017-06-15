@@ -54,6 +54,10 @@
     UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(handlePinch:)];
     
     [self.view addGestureRecognizer:pinchGesture];
+    
+    UIRotationGestureRecognizer *rotationGesture = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleRotationGesture:)];
+    
+    [self.view addGestureRecognizer:rotationGesture];
 };
 
 
@@ -67,6 +71,12 @@
     
     return color;
     
+}
+
+-(void)handleRotationGesture:(UIRotationGestureRecognizer*) rotationGesture{
+    
+    
+    NSLog(@"rotation %f", rotationGesture.rotation);
 }
 
 
