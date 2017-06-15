@@ -8,10 +8,11 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController () <UIGestureRecognizerDelegate>
 
 @property(weak,nonatomic) UIView* testView;
 @property (assign, nonatomic)CGFloat testViewScale;
+@property (assign, nonatomic)CGFloat testViewRotation;
 
 @end
 
@@ -53,11 +54,16 @@
     
     UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(handlePinch:)];
     
+    pinchGesture.delegate = self;
     [self.view addGestureRecognizer:pinchGesture];
     
     UIRotationGestureRecognizer *rotationGesture = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleRotationGesture:)];
     
+    rotationGesture.delegate = self;
     [self.view addGestureRecognizer:rotationGesture];
+    
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(handlePanGesture:)];
+    [self.view addGestureRecognizer:panGesture];
 };
 
 
@@ -73,12 +79,44 @@
     
 }
 
+-(void)handlePanGesture:(UIPanGestureRecognizer*) panGesture {
+    
+    NSLog(@"handlePan");
+    
+    self.testView.center = [panGesture locationInView:self.view];
+    
+    
+}
+
 -(void)handleRotationGesture:(UIRotationGestureRecognizer*) rotationGesture{
     
     
-    NSLog(@"rotation %f", rotationGesture.rotation);
+    
+    
+    if(rotationGesture.state == UIGestureRecognizerStateBegan){
+        
+        
+        self.testViewRotation = 0;
+    }
+    
+    CGFloat newRotation = rotationGesture.rotation - self.testViewRotation;
+    
+    CGAffineTransform currentTransform = self.testView.transform;
+    CGAffineTransform newTransform = CGAffineTransformRotate(currentTransform, newRotation);
+    
+    self.testView.transform = newTransform;
+    
+    self.testViewRotation = rotationGesture.rotation;
+    
+    
 }
 
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+    
+    return YES;
+}
 
 
 -(void)handleTapGesture:(UITapGestureRecognizer*) tapGesture{
